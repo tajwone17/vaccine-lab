@@ -15,23 +15,38 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 
-// Mock data - replace with actual data fetching
+// Mock data - aligned with vaccine schema
 const getVaccineData = (id: string) => {
   return {
+    // Vaccine table fields
     id,
+    createdAt: "2024-01-15T08:30:00Z",
+    createdBy: "usr_dr_vaccine_admin",
+    updatedAt: "2024-01-20T14:45:00Z",
     code: "CVX-208",
     name: "COVID-19 (mRNA-Pfizer-BioNTech)",
     manufacturer: "Pfizer-BioNTech",
     antigen: "SARS-CoV-2",
-    seriesName: "Primary Series",
-    doseCount: 2,
-    doseVolume: 0.3,
-    doseUnit: "ml",
-    route: "IM (Intramuscular)",
-    siteExamples: "Deltoid muscle (upper arm), Anterolateral thigh (for infants)",
-    minAgeMonths: 6,
+    series_name: "Primary Series",
+    dose_count: 2,
+    dose_volume: "0.3",
+    dose_unit: "ml",
+    route: "IM",
+    site_examples: "Deltoid muscle (upper arm), Anterolateral thigh (for infants)",
+    min_age_months: 6,
     notes:
       "Store at -80°C to -60°C. Once thawed, may be stored at 2°C to 8°C for up to 10 weeks. After dilution, use within 6 hours. Do not refreeze.",
+
+    // Related user data (creator)
+    creatorData: {
+      id: "usr_dr_vaccine_admin",
+      name: "Dr. Vaccine Administrator",
+      email: "vaccine.admin@health.gov.bd",
+      emailVerified: true,
+      image: null,
+      createdAt: "2023-12-01T00:00:00Z",
+      updatedAt: "2024-01-15T08:00:00Z",
+    },
   };
 };
 
@@ -86,7 +101,7 @@ const PageInventoryDetails = ({ params }: { params: { id: string } }) => {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                 <div className="space-y-1">
                   <p className="text-xs sm:text-sm text-muted-foreground">Vaccine Name</p>
-                  <p className="font-medium text-sm sm:text-base break-words">{vaccine.name}</p>
+                  <p className="font-medium text-sm sm:text-base wrap-break-word">{vaccine.name}</p>
                 </div>
                 <div className="space-y-1">
                   <p className="text-xs sm:text-sm text-muted-foreground">Vaccine Code</p>
@@ -111,11 +126,13 @@ const PageInventoryDetails = ({ params }: { params: { id: string } }) => {
                     <Layers className="w-3 h-3 sm:w-4 sm:h-4" />
                     Series Name
                   </p>
-                  <p className="font-medium text-sm sm:text-base">{vaccine.seriesName}</p>
+                  <p className="font-medium text-sm sm:text-base">{vaccine.series_name}</p>
                 </div>
                 <div className="space-y-1">
                   <p className="text-xs sm:text-sm text-muted-foreground">Minimum Age</p>
-                  <p className="font-medium text-sm sm:text-base">{vaccine.minAgeMonths} months</p>
+                  <p className="font-medium text-sm sm:text-base">
+                    {vaccine.min_age_months} months
+                  </p>
                 </div>
               </div>
             </CardContent>
@@ -136,12 +153,12 @@ const PageInventoryDetails = ({ params }: { params: { id: string } }) => {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                 <div className="space-y-1">
                   <p className="text-xs sm:text-sm text-muted-foreground">Dose Count (Series)</p>
-                  <p className="font-medium text-sm sm:text-base">{vaccine.doseCount} doses</p>
+                  <p className="font-medium text-sm sm:text-base">{vaccine.dose_count} doses</p>
                 </div>
                 <div className="space-y-1">
                   <p className="text-xs sm:text-sm text-muted-foreground">Dose Volume</p>
                   <p className="font-medium text-sm sm:text-base">
-                    {vaccine.doseVolume} {vaccine.doseUnit}
+                    {vaccine.dose_volume} {vaccine.dose_unit}
                   </p>
                 </div>
                 <div className="space-y-1">
@@ -155,7 +172,7 @@ const PageInventoryDetails = ({ params }: { params: { id: string } }) => {
                   <p className="text-xs sm:text-sm text-muted-foreground">
                     Injection Site Examples
                   </p>
-                  <p className="font-medium text-sm sm:text-base">{vaccine.siteExamples}</p>
+                  <p className="font-medium text-sm sm:text-base">{vaccine.site_examples}</p>
                 </div>
               </div>
             </CardContent>
@@ -177,6 +194,50 @@ const PageInventoryDetails = ({ params }: { params: { id: string } }) => {
 
         {/* Sidebar */}
         <div className="space-y-4 md:space-y-6">
+          {/* Metadata */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-base sm:text-lg">Metadata</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3 text-xs sm:text-sm">
+              <div>
+                <p className="text-muted-foreground">Vaccine ID</p>
+                <p className="font-medium font-mono text-xs">{vaccine.id}</p>
+              </div>
+              <Separator />
+              <div>
+                <p className="text-muted-foreground">Created At</p>
+                <p className="font-medium">
+                  {new Date(vaccine.createdAt).toLocaleDateString("en-US", {
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  })}
+                </p>
+              </div>
+              <Separator />
+              <div>
+                <p className="text-muted-foreground">Updated At</p>
+                <p className="font-medium">
+                  {new Date(vaccine.updatedAt).toLocaleDateString("en-US", {
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  })}
+                </p>
+              </div>
+              <Separator />
+              <div>
+                <p className="text-muted-foreground">Created By</p>
+                <p className="font-medium">{vaccine.creatorData.name}</p>
+              </div>
+            </CardContent>
+          </Card>
+
           {/* Quick Actions */}
           <Card>
             <CardHeader>
@@ -185,6 +246,9 @@ const PageInventoryDetails = ({ params }: { params: { id: string } }) => {
             <CardContent className="space-y-2">
               <Button className="w-full text-sm" variant="outline">
                 View History
+              </Button>
+              <Button className="w-full text-sm" variant="outline">
+                View Vaccinations
               </Button>
               <Button className="w-full text-sm" variant="outline">
                 Print Details
