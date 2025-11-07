@@ -348,7 +348,7 @@ const PageVerify = () => {
           </div>
 
           <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-red-600 mb-4">
-            Verify Vaccination Record
+            Verify Appoinment
           </h1>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
             Enter your phone number and vaccination ID to verify your vaccination appointment

@@ -14,7 +14,7 @@ import {
   Layers,
 } from "lucide-react";
 import Link from "next/link";
-
+ 
 // Mock data - aligned with vaccine schema
 const getVaccineData = (id: string) => {
   return {
