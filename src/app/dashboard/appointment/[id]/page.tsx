@@ -17,28 +17,79 @@ import {
   Edit,
   Trash2,
   Download,
+  Building2,
 } from "lucide-react";
 import Link from "next/link";
 
-// Mock data - replace with actual data fetching
+// Mock data - aligned with database schemas
 const getAppointmentData = (id: string) => {
   return {
+    // Appointment table fields
     id,
-    patientName: "John Doe",
-    email: "john.doe@example.com",
-    phone: "+1 (555) 123-4567",
-    dateOfBirth: "1985-03-15",
-    address: "123 Main Street, New York, NY 10001",
-    appointmentDate: "2025-11-15",
-    appointmentTime: "10:30 AM",
-    vaccine: "COVID-19 Pfizer-BioNTech",
-    doseNumber: "2nd Dose",
+    regNo: `REG-2024-${id}`,
     status: "scheduled", // scheduled, completed, cancelled, no-show
-    notes: "Patient has no known allergies. Previous dose administered on 2025-10-18.",
-    createdAt: "2025-11-01",
-    vaccinationSite: "Main Health Center - Room 202",
-    healthCardNumber: "1234-5678-9012",
-    emergencyContact: "Jane Doe - +1 (555) 987-6543",
+    createdAt: "2024-01-10T09:30:00Z",
+    updatedAt: "2024-01-12T14:20:00Z",
+    createdBy: "usr_dr_sarah_wilson",
+    vaccinator: "usr_dr_sarah_wilson",
+    patient: "pat_john_doe_001",
+    facility: "fac_city_medical_center",
+    address: "123 Healthcare Avenue, Gulshan-1",
+    city: "Dhaka",
+    state: "Dhaka Division",
+    zip: "1212",
+    country: "Bangladesh",
+
+    // Related patient data (from patient table)
+    patientData: {
+      id: "pat_john_doe_001",
+      name: "John Doe",
+      email: "john.doe@example.com",
+      phone: "+8801712345678",
+      dob: "1985-03-15T00:00:00Z",
+      gender: "Male",
+      fatherName: "Robert Doe",
+      motherName: "Mary Doe",
+      nationalId: "1234567890123",
+      birthCertificateId: "BC-2024-001",
+      address: "House 123, Road 5, Block C, Dhanmondi",
+      city: "Dhaka",
+      state: "Dhaka Division",
+      zip: "1205",
+      country: "Bangladesh",
+      createdAt: "2024-01-08T10:00:00Z",
+      updatedAt: "2024-01-08T10:00:00Z",
+    },
+
+    // Related facility data (from facility table)
+    facilityData: {
+      id: "fac_city_medical_center",
+      name: "City Medical Center",
+      type: "Hospital",
+      address: "123 Healthcare Avenue, Gulshan-1",
+      city: "Dhaka",
+      state: "Dhaka Division",
+      zip: "1212",
+      country: "Bangladesh",
+      phone: "+8802-9876543210",
+      email: "info@citymedical.com",
+      capacity: 500,
+      createdAt: "2024-01-01T00:00:00Z",
+      updatedAt: "2024-01-01T00:00:00Z",
+    },
+
+    // Related vaccinator data (from user table)
+    vaccinatorData: {
+      id: "usr_dr_sarah_wilson",
+      name: "Dr. Sarah Wilson",
+      email: "sarah.wilson@citymedical.com",
+      emailVerified: true,
+      image: null,
+      createdAt: "2023-12-15T08:00:00Z",
+      updatedAt: "2024-01-10T09:00:00Z",
+    },
+
+    notes: "Patient has no known allergies. Appointment scheduled for COVID-19 vaccination.",
   };
 };
 
@@ -117,71 +168,138 @@ const PageAppointmentDetails = ({ params }: { params: { id: string } }) => {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                 <div className="space-y-1">
                   <p className="text-xs sm:text-sm text-muted-foreground">Full Name</p>
-                  <p className="font-medium text-sm sm:text-base">{appointment.patientName}</p>
+                  <p className="font-medium text-sm sm:text-base">{appointment.patientData.name}</p>
+                </div>
+                <div className="space-y-1">
+                  <p className="text-xs sm:text-sm text-muted-foreground">Gender</p>
+                  <p className="font-medium text-sm sm:text-base">
+                    {appointment.patientData.gender}
+                  </p>
                 </div>
                 <div className="space-y-1">
                   <p className="text-xs sm:text-sm text-muted-foreground">Date of Birth</p>
                   <p className="font-medium text-sm sm:text-base">
-                    {new Date(appointment.dateOfBirth).toLocaleDateString()}
+                    {new Date(appointment.patientData.dob).toLocaleDateString()}
+                  </p>
+                </div>
+                <div className="space-y-1">
+                  <p className="text-xs sm:text-sm text-muted-foreground">National ID</p>
+                  <p className="font-medium text-sm sm:text-base">
+                    {appointment.patientData.nationalId}
                   </p>
                 </div>
                 <div className="space-y-1">
                   <p className="text-xs sm:text-sm text-muted-foreground">Email</p>
                   <p className="font-medium text-sm sm:text-base flex items-center gap-2 break-all">
                     <Mail className="w-3 h-3 sm:w-4 sm:h-4 text-muted-foreground shrink-0" />
-                    {appointment.email}
+                    {appointment.patientData.email}
                   </p>
                 </div>
                 <div className="space-y-1">
                   <p className="text-xs sm:text-sm text-muted-foreground">Phone</p>
                   <p className="font-medium text-sm sm:text-base flex items-center gap-2">
                     <Phone className="w-3 h-3 sm:w-4 sm:h-4 text-muted-foreground shrink-0" />
-                    {appointment.phone}
+                    {appointment.patientData.phone}
+                  </p>
+                </div>
+                <div className="space-y-1">
+                  <p className="text-xs sm:text-sm text-muted-foreground">Father's Name</p>
+                  <p className="font-medium text-sm sm:text-base">
+                    {appointment.patientData.fatherName}
+                  </p>
+                </div>
+                <div className="space-y-1">
+                  <p className="text-xs sm:text-sm text-muted-foreground">Mother's Name</p>
+                  <p className="font-medium text-sm sm:text-base">
+                    {appointment.patientData.motherName}
                   </p>
                 </div>
                 <div className="space-y-1 sm:col-span-2">
-                  <p className="text-xs sm:text-sm text-muted-foreground">Address</p>
+                  <p className="text-xs sm:text-sm text-muted-foreground">Patient Address</p>
                   <p className="font-medium text-sm sm:text-base flex items-start gap-2">
                     <MapPin className="w-3 h-3 sm:w-4 sm:h-4 text-muted-foreground shrink-0 mt-0.5" />
-                    <span>{appointment.address}</span>
+                    <span>
+                      {appointment.patientData.address}, {appointment.patientData.city},{" "}
+                      {appointment.patientData.state} {appointment.patientData.zip},{" "}
+                      {appointment.patientData.country}
+                    </span>
                   </p>
                 </div>
                 <div className="space-y-1">
-                  <p className="text-xs sm:text-sm text-muted-foreground">Health Card Number</p>
-                  <p className="font-medium text-sm sm:text-base">{appointment.healthCardNumber}</p>
+                  <p className="text-xs sm:text-sm text-muted-foreground">Birth Certificate ID</p>
+                  <p className="font-medium text-sm sm:text-base">
+                    {appointment.patientData.birthCertificateId}
+                  </p>
                 </div>
                 <div className="space-y-1">
-                  <p className="text-xs sm:text-sm text-muted-foreground">Emergency Contact</p>
-                  <p className="font-medium text-sm sm:text-base">{appointment.emergencyContact}</p>
+                  <p className="text-xs sm:text-sm text-muted-foreground">Registration No.</p>
+                  <p className="font-medium text-sm sm:text-base">{appointment.regNo}</p>
                 </div>
               </div>
             </CardContent>
           </Card>
 
-          {/* Vaccination Details */}
+          {/* Facility & Appointment Details */}
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
-                <Syringe className="w-4 h-4 sm:w-5 sm:h-5 shrink-0" />
-                Vaccination Details
+                <Building2 className="w-4 h-4 sm:w-5 sm:h-5 shrink-0" />
+                Facility & Appointment Details
               </CardTitle>
               <CardDescription className="text-xs sm:text-sm">
-                Information about the vaccine and administration
+                Information about the facility and appointment
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                 <div className="space-y-1">
-                  <p className="text-xs sm:text-sm text-muted-foreground">Vaccine</p>
-                  <p className="font-medium text-sm sm:text-base">{appointment.vaccine}</p>
+                  <p className="text-xs sm:text-sm text-muted-foreground">Facility Name</p>
+                  <p className="font-medium text-sm sm:text-base">
+                    {appointment.facilityData.name}
+                  </p>
                 </div>
                 <div className="space-y-1">
-                  <p className="text-xs sm:text-sm text-muted-foreground">Dose Number</p>
-                  <p className="font-medium text-sm sm:text-base">{appointment.doseNumber}</p>
+                  <p className="text-xs sm:text-sm text-muted-foreground">Facility Type</p>
+                  <p className="font-medium text-sm sm:text-base">
+                    {appointment.facilityData.type}
+                  </p>
+                </div>
+                <div className="space-y-1">
+                  <p className="text-xs sm:text-sm text-muted-foreground">Facility Phone</p>
+                  <p className="font-medium text-sm sm:text-base flex items-center gap-2">
+                    <Phone className="w-3 h-3 sm:w-4 sm:h-4 text-muted-foreground shrink-0" />
+                    {appointment.facilityData.phone}
+                  </p>
+                </div>
+                <div className="space-y-1">
+                  <p className="text-xs sm:text-sm text-muted-foreground">Capacity</p>
+                  <p className="font-medium text-sm sm:text-base">
+                    {appointment.facilityData.capacity} patients
+                  </p>
                 </div>
                 <div className="space-y-1 sm:col-span-2">
-                  <p className="text-xs sm:text-sm text-muted-foreground">Vaccination Site</p>
-                  <p className="font-medium text-sm sm:text-base">{appointment.vaccinationSite}</p>
+                  <p className="text-xs sm:text-sm text-muted-foreground">Facility Address</p>
+                  <p className="font-medium text-sm sm:text-base flex items-start gap-2">
+                    <MapPin className="w-3 h-3 sm:w-4 sm:h-4 text-muted-foreground shrink-0 mt-0.5" />
+                    <span>
+                      {appointment.facilityData.address}, {appointment.facilityData.city},{" "}
+                      {appointment.facilityData.state} {appointment.facilityData.zip},{" "}
+                      {appointment.facilityData.country}
+                    </span>
+                  </p>
+                </div>
+                <div className="space-y-1">
+                  <p className="text-xs sm:text-sm text-muted-foreground">Vaccinator</p>
+                  <p className="font-medium text-sm sm:text-base">
+                    {appointment.vaccinatorData.name}
+                  </p>
+                </div>
+                <div className="space-y-1">
+                  <p className="text-xs sm:text-sm text-muted-foreground">Vaccinator Email</p>
+                  <p className="font-medium text-sm sm:text-base flex items-center gap-2 break-all">
+                    <Mail className="w-3 h-3 sm:w-4 sm:h-4 text-muted-foreground shrink-0" />
+                    {appointment.vaccinatorData.email}
+                  </p>
                 </div>
               </div>
             </CardContent>
@@ -213,12 +331,12 @@ const PageAppointmentDetails = ({ params }: { params: { id: string } }) => {
             </CardContent>
           </Card>
 
-          {/* Appointment Schedule */}
+          {/* Appointment Timestamps */}
           <Card>
             <CardHeader>
-              <CardTitle className="text-base sm:text-lg">Schedule</CardTitle>
+              <CardTitle className="text-base sm:text-lg">Timestamps</CardTitle>
               <CardDescription className="text-xs sm:text-sm">
-                Appointment date and time
+                Appointment creation and update times
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -227,13 +345,15 @@ const PageAppointmentDetails = ({ params }: { params: { id: string } }) => {
                   <Calendar className="w-4 h-4 sm:w-5 sm:h-5 text-primary" />
                 </div>
                 <div className="min-w-0">
-                  <p className="text-xs sm:text-sm text-muted-foreground">Date</p>
+                  <p className="text-xs sm:text-sm text-muted-foreground">Created At</p>
                   <p className="font-medium text-sm sm:text-base">
-                    {new Date(appointment.appointmentDate).toLocaleDateString("en-US", {
+                    {new Date(appointment.createdAt).toLocaleDateString("en-US", {
                       weekday: "long",
                       year: "numeric",
                       month: "long",
                       day: "numeric",
+                      hour: "2-digit",
+                      minute: "2-digit",
                     })}
                   </p>
                 </div>
@@ -244,8 +364,17 @@ const PageAppointmentDetails = ({ params }: { params: { id: string } }) => {
                   <Clock className="w-4 h-4 sm:w-5 sm:h-5 text-primary" />
                 </div>
                 <div className="min-w-0">
-                  <p className="text-xs sm:text-sm text-muted-foreground">Time</p>
-                  <p className="font-medium text-sm sm:text-base">{appointment.appointmentTime}</p>
+                  <p className="text-xs sm:text-sm text-muted-foreground">Updated At</p>
+                  <p className="font-medium text-sm sm:text-base">
+                    {new Date(appointment.updatedAt).toLocaleDateString("en-US", {
+                      weekday: "long",
+                      year: "numeric",
+                      month: "long",
+                      day: "numeric",
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}
+                  </p>
                 </div>
               </div>
             </CardContent>
@@ -277,12 +406,30 @@ const PageAppointmentDetails = ({ params }: { params: { id: string } }) => {
             <CardHeader>
               <CardTitle className="text-base sm:text-lg">Metadata</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-2 text-xs sm:text-sm">
+            <CardContent className="space-y-3 text-xs sm:text-sm">
               <div>
-                <p className="text-muted-foreground">Created On</p>
-                <p className="font-medium">
-                  {new Date(appointment.createdAt).toLocaleDateString()}
-                </p>
+                <p className="text-muted-foreground">Appointment ID</p>
+                <p className="font-medium font-mono text-xs">{appointment.id}</p>
+              </div>
+              <Separator />
+              <div>
+                <p className="text-muted-foreground">Registration No.</p>
+                <p className="font-medium">{appointment.regNo}</p>
+              </div>
+              <Separator />
+              <div>
+                <p className="text-muted-foreground">Created By</p>
+                <p className="font-medium">{appointment.vaccinatorData.name}</p>
+              </div>
+              <Separator />
+              <div>
+                <p className="text-muted-foreground">Patient ID</p>
+                <p className="font-medium font-mono text-xs">{appointment.patientData.id}</p>
+              </div>
+              <Separator />
+              <div>
+                <p className="text-muted-foreground">Facility ID</p>
+                <p className="font-medium font-mono text-xs">{appointment.facilityData.id}</p>
               </div>
             </CardContent>
           </Card>
